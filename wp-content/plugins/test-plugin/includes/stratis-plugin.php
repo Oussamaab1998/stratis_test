@@ -4,18 +4,11 @@ add_shortcode('stratis_plugin','show_stratis_plugin_form');
 
 add_action('rest_api_init', 'create_rest_endpoint');
 
+
 add_action('init', 'create_messages_page');
 
 
-add_action('add_meta_boxes','create_meta_box');
 
-function create_meta_box()
-{
-    
-    add_meta_box('custom_plugin','Message','display_submission');
-
-
-}
 
 
 function create_messages_page()
@@ -49,28 +42,43 @@ function create_rest_endpoint()
     ));
 }
 
+
+
+
 function handle_enquiry($data)
 {
     $params = $data->get_params();
 
     $args = array(
-        'post_type' => 'message', // Change 'post' to your custom post type if applicable
-        'posts_per_page' => -1, // Retrieves all posts
+        'post_type' => 'message',
+        'post_status' => 'draft',
+        'posts_per_page' => -1,
     );
+    $ajaxposts = get_posts( $args );
     
-    $query = new WP_Query($args);
+    // $query = new WP_Query($args);
     
-    if ($query->have_posts()) {
-        while ($query->have_posts()) {
-            $query->the_post();
-            $post_title = get_the_title(); // Retrieve the title of the current post
-            // Compare the post title with user input
-            if ($post_title === $params['titre']) {
-                // Perform actions if the title matches user input
-                alert("il y a un autre article avec ce titre");
-                return new WP_Rest_Response('Message non envoyé', 422);
+    if (count($ajaxposts) > 0) {
+
+
+        foreach($ajaxposts as $post => $post_value) {
+            if($post_value->titre === $params['titre']){
+                // alert("il y a un autre article avec ce titre");
+                return new WP_Rest_Response('Il y a un autre article avec ce titre', 422);
             }
         }
+
+
+        // while ($query->have_posts()) {
+        //     $query->the_post();
+        //     $post_title = get_the_title(); // Retrieve the title of the current post
+        //     // Compare the post title with user input
+        //     if ($post_title === $params['titre']) {
+        //         // Perform actions if the title matches user input
+        //         alert("il y a un autre article avec ce titre");
+        //         return new WP_Rest_Response('Message non envoyé', 422);
+        //     }
+        // }
     }
 
   

@@ -2,7 +2,9 @@
     display: flex;
     height: 100%;
     justify-content: center;
-    align-items: center;'>
+    align-items: center;
+    flex-direction: column
+    '>
 
 
 
@@ -64,10 +66,11 @@ window.jQuery || document.write('<script src="http://mysite.com/jquery.min.js"><
                     form.hide();
                     $('#form_success').html(res).fadeIn(); 
                 },
-                error: function(){
-                    $('#form_error').html("Une erreur s'est produite lors de la soumission de votre formulaire").fadeIn(); 
+                error: function(request, status, error){
+                    $('#form_error').html(request.responseText).fadeIn(); 
                 }
             })
         });
+
     });
 </script>
